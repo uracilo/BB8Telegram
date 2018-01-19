@@ -28,20 +28,3 @@ def sendFile(bot, update, args):
     except:
         bot.send_message(chat_id=update.message.chat_id, text='No lo encontré :c')
         bot.send_message(chat_id=update.message.chat_id, text='Archivo: %s' % path)
-
-bot = telegram.Bot(token='511608051:AAGCNTd7WBiK5gfSA69hwyvG75S76H-_HUw')
-update = Updater(token='511608051:AAGCNTd7WBiK5gfSA69hwyvG75S76H-_HUw')
-dispatcher = update.dispatcher
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-
-
-start_handler = CommandHandler('start', start)
-dispatcher.add_handler(start_handler)
-echo_handler = MessageHandler(f.text, echo)
-dispatcher.add_handler(echo_handler)
-caps_handler = CommandHandler('caps', caps, pass_args=True)
-dispatcher.add_handler(caps_handler)
-sendFile_handler = CommandHandler('sendFile', sendFile, pass_args=True)
-dispatcher.add_handler(sendFile_handler)
-update.start_polling()
