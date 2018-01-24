@@ -1,6 +1,8 @@
 import telegram
 import os
 import logging
+import serial
+import time
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler
@@ -29,15 +31,30 @@ def sendFile(bot, update, args):
         bot.send_message(chat_id=update.message.chat_id, text='No lo encontré :c')
         bot.send_message(chat_id=update.message.chat_id, text='Archivo: %s' % path)
 
+def arduinoMensaje(bot, update):
+    arduino = serial.Serial('/dev/ttyACM0', 9600)
+    var = True
+    while var:
+        data_serial = arduino.readline().decode('UTF', 'ignore')
+        d = data_serial.rstrip('\r\n')
+        if int(d) < 30:
+            bot.send_message(chat_id=update.message.chat_id, text='Alguien entró, hora: %s' % time.strftime('%H:%M:%S'))
+            print('Alguien ha entrado, distancia: %s' % d)
+            var = False
+        else:
+            print('Todo bien, distancia: %s' % d)
+        time.sleep(2)
+
 bot = telegram.Bot(token='511608051:AAGCNTd7WBiK5gfSA69hwyvG75S76H-_HUw')
 update = Updater(token='511608051:AAGCNTd7WBiK5gfSA69hwyvG75S76H-_HUw')
 dispatcher = update.dispatcher
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
-
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
+arduino_handler = CommandHandler('arduino', arduinoMensaje)
+dispatcher.add_handler(arduino_handler)
 echo_handler = MessageHandler(f.text, echo)
 dispatcher.add_handler(echo_handler)
 caps_handler = CommandHandler('caps', caps, pass_args=True)
